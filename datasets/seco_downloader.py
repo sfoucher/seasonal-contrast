@@ -2,7 +2,7 @@ import argparse
 import csv
 import json
 from multiprocessing.dummy import Pool, Lock
-import os
+import os, sys
 from collections import OrderedDict
 import time
 from datetime import datetime, timedelta
@@ -18,7 +18,7 @@ from skimage.exposure import rescale_intensity
 from torchvision.datasets.utils import download_and_extract_archive
 import shapefile
 from shapely.geometry import shape, Point
-
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from datasets.seco_dataset import RGB_BANDS, ALL_BANDS
 
 
@@ -38,9 +38,9 @@ class UniformSampler(GeoSampler):
 
 class GaussianSampler(GeoSampler):
 
-    def __init__(self, interest_points=None, std=50):
+    def __init__(self, download_root=os.path.expanduser('~/.cache/simplemaps'), interest_points=None, std=50):
         if interest_points is None:
-            cities = self.get_world_cities()
+            cities = self.get_world_cities(download_root)
             self.interest_points = self.get_interest_points(cities)
         else:
             self.interest_points = interest_points
@@ -57,8 +57,8 @@ class GaussianSampler(GeoSampler):
     def get_world_cities(download_root=os.path.expanduser('~/.cache/simplemaps')):
         url = 'https://simplemaps.com/static/data/world-cities/basic/simplemaps_worldcities_basicv1.71.zip'
         filename = 'worldcities.csv'
-        if not os.path.exists(os.path.join(download_root, os.path.basename(url))):
-            download_and_extract_archive(url, download_root)
+        if not os.path.exists(os.path.join(download_root, 'worldcities.csv')):
+            download_and_extract_archive(url, download_root, filename='worldcities.zip')
         with open(os.path.join(download_root, filename)) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
             cities = []
@@ -287,7 +287,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_path', type=str, default=None)
     parser.add_argument('--preview', action='store_true')
-    parser.add_argument('--num_workers', type=int, default=16)
+    parser.add_argument('--num_workers', type=int, default=8)
     parser.add_argument('--num_locations', type=int, default=200000)
     parser.add_argument('--cloud_pct', type=int, default=10)
     parser.add_argument('--log_freq', type=int, default=100)
@@ -298,7 +298,7 @@ if __name__ == '__main__':
     ee.Initialize()
     collection = get_collection(cloud_pct=args.cloud_pct)
 
-    sampler = GaussianSampler()
+    sampler = GaussianSampler(download_root=os.path.join(os.path.dirname(__file__), '..'))
 
     # sampler = BoundedUniformSampler()
     # worker = lambda x: sampler.sample_point()

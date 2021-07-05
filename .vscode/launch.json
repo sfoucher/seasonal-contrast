@@ -5,12 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python : Fichier actuel",
+            "name": "BigEarthNet",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "bigearthnet_dataset.py",
             "console": "integratedTerminal",
             "args": ["--download", "","--data_dir","/home/fouchesa/DEV/seasonal-contrast","--save_dir","/home/fouchesa/DEV/seasonal-contrast/BEN"]
+        },
+        {
+            "name": "seco downloader",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/datasets/seco_downloader.py",
+            "console": "integratedTerminal",
+            "args": ["--num_locations", "2000","--save_path","/home/fouchesa/DEV/seasonal-contrast/1seco"]
         }
     ]
 }

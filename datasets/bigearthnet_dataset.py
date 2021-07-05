@@ -136,10 +136,9 @@ class Bigearthnet(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.use_new_labels = use_new_labels
-
+        download_url(self.list_file[self.split], self.root, f'{self.split}.txt')
         if download:
             download_and_extract_archive(self.url, self.root, filename='BigEarthNet.tar.gz')
-            download_url(self.list_file[self.split], self.root, f'{self.split}.txt')
             for url in self.bad_patches:
                 download_url(url, self.root)
 
@@ -213,7 +212,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', type=str)
     parser.add_argument('--save_dir', type=str)
-    parser.add_argument('--download', type=bool, default=True)
+    parser.add_argument('--download', type=bool, default=False)
     args = parser.parse_args()
 
     train_dataset = Bigearthnet(
@@ -226,6 +225,6 @@ if __name__ == '__main__':
     val_dataset = Bigearthnet(
         root=args.data_dir,
         split='val',
-        download=args.download
+        download=False
     )
     make_lmdb(val_dataset, lmdb_file=os.path.join(args.save_dir, 'val.lmdb'))
