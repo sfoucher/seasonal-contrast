@@ -117,7 +117,7 @@ def normalize(img, mean, std):
 
 
 class Bigearthnet(Dataset):
-    url = 'http://bigearth.net/downloads/BigEarthNet-v1.0.tar.gz'
+    url = 'http://bigearth.net/downloads/BigEarthNet-S2-v1.0.tar.gz'
     subdir = 'BigEarthNet-v1.0'
     list_file = {
         'train': 'https://storage.googleapis.com/remote_sensing_representations/bigearthnet-train.txt',
@@ -138,7 +138,7 @@ class Bigearthnet(Dataset):
         self.use_new_labels = use_new_labels
 
         if download:
-            download_and_extract_archive(self.url, self.root)
+            download_and_extract_archive(self.url, self.root, filename='BigEarthNet.tar.gz')
             download_url(self.list_file[self.split], self.root, f'{self.split}.txt')
             for url in self.bad_patches:
                 download_url(url, self.root)
@@ -205,23 +205,27 @@ class Bigearthnet(Dataset):
 
 
 if __name__ == '__main__':
-    import os
+    import os, sys
+    sys.path.append('/home/fouchesa/DEV/seasonal-contrast')
     import argparse
     from utils.data import make_lmdb
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', type=str)
     parser.add_argument('--save_dir', type=str)
+    parser.add_argument('--download', type=bool, default=True)
     args = parser.parse_args()
 
     train_dataset = Bigearthnet(
         root=args.data_dir,
-        split='train'
+        split='train',
+        download=args.download
     )
     make_lmdb(train_dataset, lmdb_file=os.path.join(args.save_dir, 'train.lmdb'))
 
     val_dataset = Bigearthnet(
         root=args.data_dir,
-        split='val'
+        split='val',
+        download=args.download
     )
     make_lmdb(val_dataset, lmdb_file=os.path.join(args.save_dir, 'val.lmdb'))
