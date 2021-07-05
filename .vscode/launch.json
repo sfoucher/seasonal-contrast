@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["--download", "True","--data_dir","/home/fouchesa/DEV/seasonal-contrast","--save_dir","/home/fouchesa/DEV/seasonal-contrast/BEN"]
+            "args": ["--download", "","--data_dir","/home/fouchesa/DEV/seasonal-contrast","--save_dir","/home/fouchesa/DEV/seasonal-contrast/BEN"]
         }
     ]
 }
